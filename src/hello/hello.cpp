@@ -1,3 +1,5 @@
+// #include "llvm/Bitcode/BitcodeWriter.h"
+// #include "llvm/Bitcode/BitcodeReader.h"
 #include "llvm/Bitcode/ReaderWriter.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Module.h"
@@ -24,8 +26,9 @@ int main(int argc, char** argv){
 	// bool 	RequiresNullTerminator = true,
 	// bool 	IsVolatile = false )	
 	ErrorOr<std::unique_ptr<Module>> m = parseBitcodeFile(mb.get().get()->getMemBufferRef(), context);
-	// ErrorOr<std::unique_ptr<Module>> parseBitcodeFile(MemoryBufferRef Buffer,
-    //                                                   LLVMContext &Context);
+  	/// Read the specified bitcode file, returning the module.
+	//  Expected<std::unique_ptr<Module>> parseBitcodeFile(MemoryBufferRef Buffer,
+    //                                                LLVMContext &Context);
 
 	if (bool(m) == false){
 		std::cerr << "Error reading Bitcode: " << mb.getError() << std::endl;
