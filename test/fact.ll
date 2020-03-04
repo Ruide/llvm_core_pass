@@ -10,71 +10,73 @@ target triple = "x86_64-unknown-linux-gnu"
 @.str.3 = private unnamed_addr constant [11 x i8] c"fact: %lu\0A\00", align 1
 
 ; Function Attrs: nounwind uwtable
-define i64 @_Z4facti(i32) #0 {
-  %2 = alloca i32, align 4
-  %3 = alloca i64, align 8
-  store i32 %0, i32* %2, align 4
-  %4 = load i32, i32* %2, align 4
-  %5 = sext i32 %4 to i64
-  store i64 %5, i64* %3, align 8
-  br label %6
+define i64 @_Z4facti(i32 %x) #0 {
+entry:
+  %x.addr = alloca i32, align 4
+  %r = alloca i64, align 8
+  store i32 %x, i32* %x.addr, align 4
+  %0 = load i32, i32* %x.addr, align 4
+  %conv = sext i32 %0 to i64
+  store i64 %conv, i64* %r, align 8
+  br label %while.cond
 
-; <label>:6:                                      ; preds = %10, %1
-  %7 = load i32, i32* %2, align 4
-  %8 = add nsw i32 %7, -1
-  store i32 %8, i32* %2, align 4
-  %9 = icmp sge i32 %8, 2
-  br i1 %9, label %10, label %15
+while.cond:                                       ; preds = %while.body, %entry
+  %1 = load i32, i32* %x.addr, align 4
+  %dec = add nsw i32 %1, -1
+  store i32 %dec, i32* %x.addr, align 4
+  %cmp = icmp sge i32 %dec, 2
+  br i1 %cmp, label %while.body, label %while.end
 
-; <label>:10:                                     ; preds = %6
-  %11 = load i32, i32* %2, align 4
-  %12 = sext i32 %11 to i64
-  %13 = load i64, i64* %3, align 8
-  %14 = mul nsw i64 %13, %12
-  store i64 %14, i64* %3, align 8
-  br label %6
+while.body:                                       ; preds = %while.cond
+  %2 = load i32, i32* %x.addr, align 4
+  %conv1 = sext i32 %2 to i64
+  %3 = load i64, i64* %r, align 8
+  %mul = mul nsw i64 %3, %conv1
+  store i64 %mul, i64* %r, align 8
+  br label %while.cond
 
-; <label>:15:                                     ; preds = %6
-  %16 = load i64, i64* %3, align 8
-  ret i64 %16
+while.end:                                        ; preds = %while.cond
+  %4 = load i64, i64* %r, align 8
+  ret i64 %4
 }
 
 ; Function Attrs: norecurse uwtable
 define i32 @main() #1 {
-  %1 = alloca i32, align 4
-  %2 = alloca i32, align 4
-  %3 = alloca i32, align 4
-  %4 = alloca i32, align 4
-  store i32 0, i32* %1, align 4
-  store i32 7, i32* %4, align 4
-  br label %5
+entry:
+  %retval = alloca i32, align 4
+  %a = alloca i32, align 4
+  %b = alloca i32, align 4
+  %c = alloca i32, align 4
+  store i32 0, i32* %retval, align 4
+  store i32 7, i32* %c, align 4
+  br label %while.cond
 
-; <label>:5:                                      ; preds = %14, %0
-  %6 = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32* %2)
-  %7 = icmp sgt i32 %6, 0
-  br i1 %7, label %8, label %18
+while.cond:                                       ; preds = %cond.end, %entry
+  %call = call i32 (i8*, ...) @scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32* %a)
+  %cmp = icmp sgt i32 %call, 0
+  br i1 %cmp, label %while.body, label %while.end
 
-; <label>:8:                                      ; preds = %5
-  %9 = load i32, i32* %2, align 4
-  %10 = icmp sgt i32 %9, 0
-  br i1 %10, label %11, label %12
+while.body:                                       ; preds = %while.cond
+  %0 = load i32, i32* %a, align 4
+  %cmp1 = icmp sgt i32 %0, 0
+  br i1 %cmp1, label %cond.true, label %cond.false
 
-; <label>:11:                                     ; preds = %8
-  br label %14
+cond.true:                                        ; preds = %while.body
+  br label %cond.end
 
-; <label>:12:                                     ; preds = %8
+cond.false:                                       ; preds = %while.body
   call void @__assert_fail(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2, i32 0, i32 0), i32 18, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @__PRETTY_FUNCTION__.main, i32 0, i32 0)) #4
   unreachable
                                                   ; No predecessors!
-  br label %14
+  br label %cond.end
 
-; <label>:14:                                     ; preds = %13, %11
-  %15 = load i32, i32* %2, align 4
-  %16 = call i64 @_Z4facti(i32 %15)
-  %17 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i32 0, i32 0), i64 %16)
-  br label %5
+cond.end:                                         ; preds = %1, %cond.true
+  %2 = load i32, i32* %a, align 4
+  %call2 = call i64 @_Z4facti(i32 %2)
+  %call3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.3, i32 0, i32 0), i64 %call2)
+  br label %while.cond
 
-; <label>:18:                                     ; preds = %5
+while.end:                                        ; preds = %while.cond
   ret i32 0
 }
 

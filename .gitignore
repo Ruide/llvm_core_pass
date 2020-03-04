@@ -1,3 +1,4 @@
 *.o
-helloworld
-fact.bc
+*.bc
+*.so
+*.ll
